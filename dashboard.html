@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - BlogSpace</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <h2 class="logo">BlogSpace.</h2>
+
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="login.html" onclick="localStorage.removeItem('loggedInUser')">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="dashboard">
+
+        <div class="dashboard-heading">
+            <div>
+                <h1>Welcome to Dashboard!</h1>
+                <p id="userWelcome"></p>
+                <p>Manage your blogs and create new stories.</p>
+            </div>
+
+            <a href="create-blog.html" class="create-blog-btn">
+                + Create New Blog
+            </a>
+        </div>
+
+        <!-- Statistics -->
+
+        <div class="stats-container">
+
+            <div class="stat-card">
+                <h3>Total Blogs</h3>
+                <h1 id="totalBlogs">0</h1>
+            </div>
+
+            <div class="stat-card">
+                <h3>Published Blogs</h3>
+                <h1 id="publishedBlogs">0</h1>
+            </div>
+
+            <div class="stat-card">
+                <h3>Draft Blogs</h3>
+                <h1 id="draftBlogs">0</h1>
+            </div>
+
+        </div>
+
+        <!-- Blog List -->
+
+        <section class="dashboard-blogs">
+
+            <h2>My Recent Blogs</h2>
+
+            <div class="dashboard-blog-card">
+
+                <div>
+                    <h3>Introduction to Web Development</h3>
+                    <p>Learn the basics of creating websites.</p>
+                    <span>Published</span>
+                </div>
+
+                <a href="create-blog.html">Edit</a>
+
+            </div>
+
+            <div class="dashboard-blog-card">
+
+                <div>
+                    <h3>Importance of Learning New Skills</h3>
+                    <p>Why continuous learning is important.</p>
+                    <span>Published</span>
+                </div>
+
+                <a href="create-blog.html">Edit</a>
+
+            </div>
+
+            <div class="dashboard-blog-card">
+
+                <div>
+                    <h3>My First Blog</h3>
+                    <p>My blogging journey begins here.</p>
+                    <span class="draft">Draft</span>
+                </div>
+
+                <a href="create-blog.html">Edit</a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <h2>BlogSpace.</h2>
+        <p>Share your thoughts. Inspire the world.</p>
+        <p>© 2026 BlogSpace. All Rights Reserved.</p>
+    </footer>
+<script src="script.js"></script>
+</body>
+</html>
