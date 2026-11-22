@@ -6,6 +6,9 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
 const User = require("./models/User");
 const Blog = require("./models/Blog");
 
