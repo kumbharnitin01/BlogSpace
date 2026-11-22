@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
@@ -9,6 +10,33 @@ const User = require("./models/User");
 const Blog = require("./models/Blog");
 
 const app = express();
+
+// JWT Authentication Middleware
+function verifyToken(req, res, next) {
+
+    const authHeader = req.headers["authorization"];
+
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) {
+        return res.status(401).json({
+            message: "Access denied. Please login first."
+        });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+
+        if (error) {
+            return res.status(403).json({
+                message: "Invalid or expired token."
+            });
+        }
+
+        req.user = decoded;
+
+        next();
+    });
+}
 
 app.use(cors());
 app.use(express.json());
@@ -106,26 +134,38 @@ app.post("/api/login", async (req, res) => {
             });
         }
 
-        res.json({
-            message: "Login successful!",
-            user: {
+        const token = jwt.sign(
+            {
                 id: user._id,
-                name: user.name,
                 email: user.email
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "1d"
             }
+        );
+
+        res.json({
+        message: "Login successful!",
+        token: token,
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email
+        }
         });
 
-    } catch (error) {
+        } catch (error) {
 
-        console.error(error);
+            console.error(error);
 
-        res.status(500).json({
-            message: "Login failed"
+            res.status(500).json({
+                message: "Login failed"
+            });
+
+        }
+
         });
-
-    }
-
-});
 
 // Get All Blogs API
 app.get("/api/blogs", async (req, res) => {
@@ -150,9 +190,35 @@ app.get("/api/blogs", async (req, res) => {
 
 });
 
-// Create Blog API
-app.post("/api/blogs", async (req, res) => {
 
+// Get Logged-in User's Blogs API
+app.get("/api/my-blogs", verifyToken, async (req, res) => {
+
+    try {
+
+        const blogs = await Blog.find({
+            author: req.user.id
+        }).sort({ _id: -1 });
+
+        res.json({
+            blogs: blogs
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            message: "Unable to fetch your blogs"
+        });
+
+    }
+
+});
+
+
+// Create Blog API
+app.post("/api/blogs", verifyToken, async (req, res) => {
     try {
 
         const { title, category, content } = req.body;
@@ -166,7 +232,8 @@ app.post("/api/blogs", async (req, res) => {
         const newBlog = new Blog({
             title,
             category,
-            content
+            content,
+            author: req.user.id
         });
 
         await newBlog.save();
@@ -189,7 +256,7 @@ app.post("/api/blogs", async (req, res) => {
 });
 
 // Update Blog API
-app.put("/api/blogs/:id", async (req, res) => {
+app.put("/api/blogs/:id", verifyToken, async (req, res) => {
 
     try {
 
@@ -201,18 +268,21 @@ app.put("/api/blogs/:id", async (req, res) => {
             });
         }
 
-        const updatedBlog = await Blog.findByIdAndUpdate(
-            req.params.id,
-            {
-                title,
-                category,
-                content
-            },
-            {
-                new: true,
-                runValidators: true
-            }
-        );
+        const updatedBlog = await Blog.findOneAndUpdate(
+        {
+            _id: req.params.id,
+            author: req.user.id
+        },
+        {
+            title,
+            category,
+            content
+        },
+        {
+            new: true,
+            runValidators: true
+        }
+    );
 
         if (!updatedBlog) {
             return res.status(404).json({
@@ -239,11 +309,14 @@ app.put("/api/blogs/:id", async (req, res) => {
 
 
 // Delete Blog API
-app.delete("/api/blogs/:id", async (req, res) => {
+app.delete("/api/blogs/:id", verifyToken, async (req, res) => {
 
     try {
 
-        const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
+        const deletedBlog = await Blog.findOneAndDelete({
+        _id: req.params.id,
+        author: req.user.id
+    });
 
         if (!deletedBlog) {
             return res.status(404).json({

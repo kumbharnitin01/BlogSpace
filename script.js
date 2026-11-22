@@ -83,8 +83,17 @@ if (loginForm) {
                 loginMessage.textContent = data.message;
                 loginMessage.style.color = "green";
 
+                // Save JWT token
+                localStorage.setItem("token", data.token);
+
                 // Save logged-in user's email
                 localStorage.setItem("loggedInUser", data.user.email);
+
+                // Save logged-in user's ID
+                localStorage.setItem("userId", data.user.id);
+
+                // Save logged-in user's name
+                localStorage.setItem("userName", data.user.name);
 
                 // Open Dashboard
                 setTimeout(function() {
@@ -223,7 +232,8 @@ if (createBlogForm) {
             const response = await fetch("http://localhost:5000/api/blogs", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + localStorage.getItem("token")
                 },
                 body: JSON.stringify({
                     title: title,
@@ -338,7 +348,8 @@ if (savedBlogsContainer) {
                             {
                                 method: "PUT",
                                 headers: {
-                                    "Content-Type": "application/json"
+                                    "Content-Type": "application/json",
+                                    "Authorization": "Bearer " + localStorage.getItem("token")
                                 },
                                 body: JSON.stringify({
                                     title: newTitle,
@@ -378,7 +389,10 @@ if (savedBlogsContainer) {
                         const response = await fetch(
                             "http://localhost:5000/api/blogs/" + blog._id,
                             {
-                                method: "DELETE"
+                                method: "DELETE",
+                                headers: {
+                                    "Authorization": "Bearer " + localStorage.getItem("token")
+                                }
                             }
                         );
 
@@ -446,7 +460,12 @@ if (totalBlogsElement && publishedBlogsElement && draftBlogsElement) {
 
         try {
 
-            const response = await fetch("http://localhost:5000/api/blogs");
+            const response = await fetch("http://localhost:5000/api/my-blogs", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem("token")
+            }
+        });
 
             if (!response.ok) {
                 throw new Error("Unable to fetch blogs");
@@ -480,14 +499,18 @@ if (totalBlogsElement && publishedBlogsElement && draftBlogsElement) {
 
 // Protect Dashboard Page
 
+// Protect Dashboard Page
+
 const userWelcome = document.getElementById("userWelcome");
 
 if (userWelcome) {
 
+    const token = localStorage.getItem("token");
     const loggedInUser = localStorage.getItem("loggedInUser");
 
-    if (!loggedInUser) {
+    if (!token || !loggedInUser) {
 
+        localStorage.clear();
         window.location.href = "login.html";
 
     } else {
@@ -496,4 +519,18 @@ if (userWelcome) {
             "Welcome! You are logged in as: " + loggedInUser;
 
     }
+
+}
+
+// Logout Function
+
+function logoutUser() {
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("loggedInUser");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userName");
+
+    window.location.href = "login.html";
+
 }
