@@ -65,7 +65,7 @@ if (loginForm) {
 
         try {
 
-            const response = await fetch("http://localhost:5000/api/login", {
+            const response = await fetch("https://blogspace-4k3y.onrender.com/api/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -160,7 +160,7 @@ if (registerForm) {
 
         try {
 
-            const response = await fetch("http://localhost:5000/api/register", {
+            const response = await fetch("https://blogspace-4k3y.onrender.com/api/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -229,7 +229,7 @@ if (createBlogForm) {
 
         try {
 
-            const response = await fetch("http://localhost:5000/api/blogs", {
+            const response = await fetch("https://blogspace-4k3y.onrender.com/api/blogs", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -287,7 +287,7 @@ if (savedBlogsContainer) {
 
         try {
 
-            const response = await fetch("http://localhost:5000/api/blogs");
+            const response = await fetch("https://blogspace-4k3y.onrender.com/api/blogs");
             const data = await response.json();
 
             savedBlogsContainer.innerHTML = "";
@@ -344,7 +344,7 @@ if (savedBlogsContainer) {
                     try {
 
                         const response = await fetch(
-                            "http://localhost:5000/api/blogs/" + blog._id,
+                            "https://blogspace-4k3y.onrender.com/api/blogs/" + blog._id,
                             {
                                 method: "PUT",
                                 headers: {
@@ -387,7 +387,7 @@ if (savedBlogsContainer) {
                     try {
 
                         const response = await fetch(
-                            "http://localhost:5000/api/blogs/" + blog._id,
+                            "https://blogspace-4k3y.onrender.com/api/blogs/" + blog._id,
                             {
                                 method: "DELETE",
                                 headers: {
@@ -460,7 +460,7 @@ if (totalBlogsElement && publishedBlogsElement && draftBlogsElement) {
 
         try {
 
-            const response = await fetch("http://localhost:5000/api/my-blogs", {
+            const response = await fetch("https://blogspace-4k3y.onrender.com/api/my-blogs", {
             method: "GET",
             headers: {
                 "Authorization": "Bearer " + localStorage.getItem("token")
